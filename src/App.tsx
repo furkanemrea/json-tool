@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Navbar from './components/Navbar.tsx';
 import About from './components/About.tsx';
@@ -19,21 +19,19 @@ const AppContainer = styled.div`
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppContainer>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<JsonBeautifier />} />
-          <Route path="/json-beautifier" element={<JsonBeautifier />} />
-          <Route path="/json-map" element={<JsonMap />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/json-to-code" element={<JsonToCode />} />
-          <Route path="/json-to-xml" element={<JsonToXml />} />
-          <Route path="/text-comparer" element={<TextComparer />} />
-          <Route path="/json-converter" element={<JsonToExcel />} />
-        </Routes>
-      </AppContainer>
-    </BrowserRouter>
+    <AppContainer>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Navigate to="/about" replace />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/json-beautifier" element={<JsonBeautifier />} />
+        <Route path="/json-map" element={<JsonMap />} />
+        <Route path="/json-to-code" element={<JsonToCode />} />
+        <Route path="/text-comparer" element={<TextComparer />} />
+        <Route path="/json-converter" element={<JsonToExcel />} />
+        <Route path="/json-to-xml" element={<JsonToXml />} />
+      </Routes>
+    </AppContainer>
   );
 }
 

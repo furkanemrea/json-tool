@@ -14,7 +14,8 @@ import {
 const { Header } = Layout;
 
 const Navbar = () => {
-  const location = useLocation();
+
+  const currentPath = window.location.pathname === '/' ? '/about' : window.location.pathname;
 
   const menuItems = [
     {
@@ -71,7 +72,7 @@ const Navbar = () => {
     >
       <Menu
         mode="horizontal"
-        selectedKeys={[location.pathname]}
+        selectedKeys={[currentPath]}
         items={menuItems.map(item => ({
           ...item,
           key: item.key,
