@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Typography, Row, Col, Input, Card, Button, Select, message } from 'antd';
 import { DownloadOutlined, FileExcelOutlined, FileTextOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { Helmet } from 'react-helmet-async';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -93,52 +94,58 @@ const JsonToExcel = () => {
   };
 
   return (
-    <Layout>
-      <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Title level={2} style={{ marginBottom: 8 }}>JSON to Excel/CSV</Title>
-            <Text type="secondary">
-              Convert your JSON data to Excel or CSV format
-            </Text>
-          </div>
+    <>
+      <Helmet>
+        <title>JSON to Excel Converter - Export JSON to XLSX | FEKA Tools</title>
+        <meta name="description" content="Convert JSON to Excel (XLSX) format online. Export your JSON data to spreadsheet format with automatic column detection and nested data support." />
+        <meta name="keywords" content="json to excel, json to xlsx, convert json to excel, json excel converter, json to spreadsheet, json2excel, export json to excel" />
+      </Helmet>
+      <Layout>
+        <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <Title level={2} style={{ marginBottom: 8 }}>JSON to Excel/CSV</Title>
+              <Text type="secondary">
+                Convert your JSON data to Excel or CSV format
+              </Text>
+            </div>
 
-          <Row gutter={16}>
-            <Col span={24}>
-              <Card 
-                title="Input JSON" 
-                style={{ marginBottom: 16 }}
-                extra={
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <Select
-                      value={exportType}
-                      onChange={setExportType}
-                      style={{ width: 120 }}
-                    >
-                      <Option value="excel">
-                        <FileExcelOutlined /> Excel
-                      </Option>
-                      <Option value="csv">
-                        <FileTextOutlined /> CSV
-                      </Option>
-                    </Select>
-                    <Button 
-                      type="primary"
-                      icon={<DownloadOutlined />}
-                      onClick={handleExport}
-                    >
-                      Export
-                    </Button>
-                  </div>
-                }
-              >
-                <TextArea
-                  value={inputJson}
-                  onChange={(e) => {
-                    setInputJson(e.target.value);
-                    setError(null);
-                  }}
-                  placeholder={`Paste your JSON here... Example:
+            <Row gutter={16}>
+              <Col span={24}>
+                <Card 
+                  title="Input JSON" 
+                  style={{ marginBottom: 16 }}
+                  extra={
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Select
+                        value={exportType}
+                        onChange={setExportType}
+                        style={{ width: 120 }}
+                      >
+                        <Option value="excel">
+                          <FileExcelOutlined /> Excel
+                        </Option>
+                        <Option value="csv">
+                          <FileTextOutlined /> CSV
+                        </Option>
+                      </Select>
+                      <Button 
+                        type="primary"
+                        icon={<DownloadOutlined />}
+                        onClick={handleExport}
+                      >
+                        Export
+                      </Button>
+                    </div>
+                  }
+                >
+                  <TextArea
+                    value={inputJson}
+                    onChange={(e) => {
+                      setInputJson(e.target.value);
+                      setError(null);
+                    }}
+                    placeholder={`Paste your JSON here... Example:
 [
   {
     "id": 1,
@@ -151,50 +158,51 @@ const JsonToExcel = () => {
     "email": "jane@example.com"
   }
 ]`}
-                  autoSize={{ minRows: 15, maxRows: 15 }}
-                  style={{ 
-                    fontFamily: 'monospace',
-                    fontSize: '13px'
-                  }}
-                />
-                {error && (
-                  <div style={{ marginTop: 16 }}>
-                    <Text type="danger">{error}</Text>
-                  </div>
-                )}
-              </Card>
-            </Col>
-          </Row>
+                    autoSize={{ minRows: 15, maxRows: 15 }}
+                    style={{ 
+                      fontFamily: 'monospace',
+                      fontSize: '13px'
+                    }}
+                  />
+                  {error && (
+                    <div style={{ marginTop: 16 }}>
+                      <Text type="danger">{error}</Text>
+                    </div>
+                  )}
+                </Card>
+              </Col>
+            </Row>
 
-          <Row gutter={16}>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Supported Formats</Title>
-                <Text type="secondary">
-                  Export your data to Excel (.xlsx) or CSV format
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Nested Objects</Title>
-                <Text type="secondary">
-                  Automatically flattens nested objects with dot notation
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Array Handling</Title>
-                <Text type="secondary">
-                  Arrays are converted to comma-separated values
-                </Text>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </Content>
-    </Layout>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Supported Formats</Title>
+                  <Text type="secondary">
+                    Export your data to Excel (.xlsx) or CSV format
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Nested Objects</Title>
+                  <Text type="secondary">
+                    Automatically flattens nested objects with dot notation
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Array Handling</Title>
+                  <Text type="secondary">
+                    Arrays are converted to comma-separated values
+                  </Text>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        </Content>
+      </Layout>
+    </>
   );
 };
 

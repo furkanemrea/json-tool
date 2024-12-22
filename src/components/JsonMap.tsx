@@ -40,6 +40,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
+import { Helmet } from 'react-helmet-async';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -567,125 +568,132 @@ const JsonMap = () => {
   );
 
   return (
-    <Layout style={{ height: "100vh" }}>
-      <Content style={{ height: "100%", display: "flex" }}>
-        {/* JSON Input Panel */}
-        <div
-          style={{
-            width: isJsonPanelOpen ? "350px" : "0px",
-            height: "100%",
-            borderRight: "1px solid #f0f0f0",
-            backgroundColor: "#fff",
-            display: "flex",
-            flexDirection: "column",
-            transition: "width 0.2s ease",
-            overflow: "hidden",
-          }}
-        >
+    <>
+      <Helmet>
+        <title>JSON Map Visualizer - View JSON Structure | FEKA Tools</title>
+        <meta name="description" content="Visualize your JSON structure with an interactive diagram. Expand/collapse nodes, zoom controls, and visual representation of nested objects and arrays." />
+        <meta name="keywords" content="json visualizer, json structure viewer, json tree view, json map tool, json diagram" />
+      </Helmet>
+      <Layout style={{ height: "100vh" }}>
+        <Content style={{ height: "100%", display: "flex" }}>
+          {/* JSON Input Panel */}
           <div
             style={{
-              padding: "16px",
-              borderBottom: "1px solid #f0f0f0",
+              width: isJsonPanelOpen ? "350px" : "0px",
+              height: "100%",
+              borderRight: "1px solid #f0f0f0",
+              backgroundColor: "#fff",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              flexDirection: "column",
+              transition: "width 0.2s ease",
+              overflow: "hidden",
             }}
           >
-            <Title level={4} style={{ margin: 0 }}>
-              JSON Input
-            </Title>
+            <div
+              style={{
+                padding: "16px",
+                borderBottom: "1px solid #f0f0f0",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Title level={4} style={{ margin: 0 }}>
+                JSON Input
+              </Title>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <TextArea
+                value={inputJson}
+                onChange={(e) => setInputJson(e.target.value)}
+                placeholder="Paste your JSON here..."
+                style={{
+                  flex: 1,
+                  resize: "none",
+                  fontFamily: "monospace",
+                  fontSize: "13px",
+                  border: "1px solid #d9d9d9",
+                  borderRadius: "4px",
+                  padding: "8px",
+                }}
+              />
+              {error && (
+                <Alert
+                  message="Error"
+                  description={error}
+                  type="error"
+                  style={{ marginTop: "16px" }}
+                  showIcon
+                />
+              )}
+            </div>
           </div>
+
+          {/* Toggle Button */}
+          <Button
+            type="text"
+            icon={isJsonPanelOpen ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+            onClick={() => setIsJsonPanelOpen(!isJsonPanelOpen)}
+            style={{
+              position: "absolute",
+              left: isJsonPanelOpen ? "350px" : "0",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 100,
+              transition: "left 0.2s ease",
+              borderRadius: "0 4px 4px 0",
+              height: "50px",
+              width: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#fff",
+              borderLeft: "none",
+              boxShadow: "2px 0 8px rgba(0,0,0,0.15)",
+            }}
+          />
+
+          {/* Diagram Panel */}
           <div
             style={{
               flex: 1,
-              padding: "16px",
-              display: "flex",
-              flexDirection: "column",
+              height: "100%",
+              position: "relative",
+              backgroundColor: "#fafafa",
             }}
           >
-            <TextArea
-              value={inputJson}
-              onChange={(e) => setInputJson(e.target.value)}
-              placeholder="Paste your JSON here..."
-              style={{
-                flex: 1,
-                resize: "none",
-                fontFamily: "monospace",
-                fontSize: "13px",
-                border: "1px solid #d9d9d9",
-                borderRadius: "4px",
-                padding: "8px",
-              }}
-            />
-            {error && (
-              <Alert
-                message="Error"
-                description={error}
-                type="error"
-                style={{ marginTop: "16px" }}
-                showIcon
-              />
-            )}
+            <ReactFlowProvider>
+              <div ref={flowRef} style={{ height: "100%" }}>
+                <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  onInit={onInit}
+                  fitView
+                  minZoom={0.1}
+                  maxZoom={1.5}
+                  defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
+                  nodesDraggable={false}
+                  elementsSelectable={false}
+                  attributionPosition="bottom-left"
+                >
+                  <Background color="#aaa" gap={16} />
+                  {controlButtons}
+                </ReactFlow>
+              </div>
+            </ReactFlowProvider>
           </div>
-        </div>
-
-        {/* Toggle Button */}
-        <Button
-          type="text"
-          icon={isJsonPanelOpen ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-          onClick={() => setIsJsonPanelOpen(!isJsonPanelOpen)}
-          style={{
-            position: "absolute",
-            left: isJsonPanelOpen ? "350px" : "0",
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 100,
-            transition: "left 0.2s ease",
-            borderRadius: "0 4px 4px 0",
-            height: "50px",
-            width: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#fff",
-            borderLeft: "none",
-            boxShadow: "2px 0 8px rgba(0,0,0,0.15)",
-          }}
-        />
-
-        {/* Diagram Panel */}
-        <div
-          style={{
-            flex: 1,
-            height: "100%",
-            position: "relative",
-            backgroundColor: "#fafafa",
-          }}
-        >
-          <ReactFlowProvider>
-            <div ref={flowRef} style={{ height: "100%" }}>
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onInit={onInit}
-                fitView
-                minZoom={0.1}
-                maxZoom={1.5}
-                defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
-                nodesDraggable={false}
-                elementsSelectable={false}
-                attributionPosition="bottom-left"
-              >
-                <Background color="#aaa" gap={16} />
-                {controlButtons}
-              </ReactFlow>
-            </div>
-          </ReactFlowProvider>
-        </div>
-      </Content>
-    </Layout>
+        </Content>
+      </Layout>
+    </>
   );
 };
 

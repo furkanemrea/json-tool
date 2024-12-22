@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Row, Col, Input, Card, Button, message, Select } from 'antd';
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons';
+import { Helmet } from 'react-helmet-async';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -96,111 +97,118 @@ const JsonToXml = () => {
   };
 
   return (
-    <Layout>
-      <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Title level={2} style={{ marginBottom: 8 }}>JSON to XML Converter</Title>
-            <Text type="secondary">
-              Convert your JSON data to XML format with proper formatting
-            </Text>
-          </div>
+    <>
+      <Helmet>
+        <title>JSON to XML Converter - Free Online Tool | FEKA Tools</title>
+        <meta name="description" content="Convert JSON to XML format online. Easy-to-use converter with proper XML structure generation, attribute support, and instant conversion results." />
+        <meta name="keywords" content="json to xml, convert json to xml, json xml converter, json to xml online, xml converter, json2xml, free json to xml" />
+      </Helmet>
+      <Layout>
+        <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <Title level={2} style={{ marginBottom: 8 }}>JSON to XML Converter</Title>
+              <Text type="secondary">
+                Convert your JSON data to XML format with proper formatting
+              </Text>
+            </div>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Card
-                title="Input JSON"
-                style={{ marginBottom: 16 }}
-                bodyStyle={{ padding: '12px' }}
-              >
-                <TextArea
-                  value={inputJson}
-                  onChange={(e) => setInputJson(e.target.value)}
-                  placeholder="Paste your JSON here..."
-                  style={textAreaStyle}
-                />
-                {error && (
-                  <div style={{ marginTop: 8 }}>
-                    <Text type="danger">{error}</Text>
-                  </div>
-                )}
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card
-                title="Output XML"
-                extra={
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <Select
-                      value={indentSize}
-                      onChange={handleIndentChange}
-                      style={{ width: 100 }}
-                    >
-                      <Select.Option value={2}>2 spaces</Select.Option>
-                      <Select.Option value={4}>4 spaces</Select.Option>
-                      <Select.Option value={8}>8 spaces</Select.Option>
-                    </Select>
-                    <Button
-                      type="text"
-                      icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                      onClick={handleCopy}
-                      disabled={!outputXml}
-                    >
-                      {copied ? 'Copied!' : 'Copy'}
-                    </Button>
-                  </div>
-                }
-                style={{ marginBottom: 16 }}
-                bodyStyle={{ padding: '12px' }}
-              >
-                <pre
-                  style={{
-                    ...textAreaStyle,
-                    margin: 0,
-                    padding: '8px',
-                    backgroundColor: '#fafafa',
-                    border: '1px solid #d9d9d9',
-                    borderRadius: '4px',
-                    overflow: 'auto',
-                  }}
+            <Row gutter={16}>
+              <Col span={12}>
+                <Card
+                  title="Input JSON"
+                  style={{ marginBottom: 16 }}
+                  bodyStyle={{ padding: '12px' }}
                 >
-                  {outputXml || 'XML output will appear here'}
-                </pre>
-              </Card>
-            </Col>
-          </Row>
+                  <TextArea
+                    value={inputJson}
+                    onChange={(e) => setInputJson(e.target.value)}
+                    placeholder="Paste your JSON here..."
+                    style={textAreaStyle}
+                  />
+                  {error && (
+                    <div style={{ marginTop: 8 }}>
+                      <Text type="danger">{error}</Text>
+                    </div>
+                  )}
+                </Card>
+              </Col>
 
-          {/* Features Section */}
-          <Row gutter={16} style={{ marginTop: 24 }}>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Real-time Conversion</Title>
-                <Text type="secondary">
-                  See your XML output instantly as you type
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Proper Formatting</Title>
-                <Text type="secondary">
-                  Automatically formats XML with customizable indentation
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Special Character Handling</Title>
-                <Text type="secondary">
-                  Properly escapes special XML characters
-                </Text>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </Content>
-    </Layout>
+              <Col span={12}>
+                <Card
+                  title="Output XML"
+                  extra={
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <Select
+                        value={indentSize}
+                        onChange={handleIndentChange}
+                        style={{ width: 100 }}
+                      >
+                        <Select.Option value={2}>2 spaces</Select.Option>
+                        <Select.Option value={4}>4 spaces</Select.Option>
+                        <Select.Option value={8}>8 spaces</Select.Option>
+                      </Select>
+                      <Button
+                        type="text"
+                        icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                        onClick={handleCopy}
+                        disabled={!outputXml}
+                      >
+                        {copied ? 'Copied!' : 'Copy'}
+                      </Button>
+                    </div>
+                  }
+                  style={{ marginBottom: 16 }}
+                  bodyStyle={{ padding: '12px' }}
+                >
+                  <pre
+                    style={{
+                      ...textAreaStyle,
+                      margin: 0,
+                      padding: '8px',
+                      backgroundColor: '#fafafa',
+                      border: '1px solid #d9d9d9',
+                      borderRadius: '4px',
+                      overflow: 'auto',
+                    }}
+                  >
+                    {outputXml || 'XML output will appear here'}
+                  </pre>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Features Section */}
+            <Row gutter={16} style={{ marginTop: 24 }}>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Real-time Conversion</Title>
+                  <Text type="secondary">
+                    See your XML output instantly as you type
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Proper Formatting</Title>
+                  <Text type="secondary">
+                    Automatically formats XML with customizable indentation
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Special Character Handling</Title>
+                  <Text type="secondary">
+                    Properly escapes special XML characters
+                  </Text>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        </Content>
+      </Layout>
+    </>
   );
 };
 

@@ -10,6 +10,7 @@ import JsonToCode from './components/JsonToCode.tsx';
 import TextComparer from './components/TextComparer.tsx';
 import JsonToExcel from './components/JsonToExcel.tsx';
 import JsonToXml from './components/JsonToXml.tsx';
+import { HelmetProvider } from 'react-helmet-async';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -19,19 +20,21 @@ const AppContainer = styled.div`
 
 function App() {
   return (
-    <AppContainer>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Navigate to="/about" replace />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/json-beautifier" element={<JsonBeautifier />} />
-        <Route path="/json-map" element={<JsonMap />} />
-        <Route path="/json-to-code" element={<JsonToCode />} />
-        <Route path="/text-comparer" element={<TextComparer />} />
-        <Route path="/json-converter" element={<JsonToExcel />} />
-        <Route path="/json-to-xml" element={<JsonToXml />} />
-      </Routes>
-    </AppContainer>
+    <HelmetProvider>
+      <AppContainer>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Navigate to="/about" replace />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/json-beautifier" element={<JsonBeautifier />} />
+          <Route path="/json-map" element={<JsonMap />} />
+          <Route path="/json-to-code" element={<JsonToCode />} />
+          <Route path="/text-comparer" element={<TextComparer />} />
+          <Route path="/json-converter" element={<JsonToExcel />} />
+          <Route path="/json-to-xml" element={<JsonToXml />} />
+        </Routes>
+      </AppContainer>
+    </HelmetProvider>
   );
 }
 

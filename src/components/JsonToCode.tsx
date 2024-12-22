@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Row, Col, Input, Card, Button, message, Select } from 'antd';
 import { CopyOutlined, CheckOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -236,100 +237,107 @@ const JsonToCode = () => {
   };
 
   return (
-    <Layout>
-      <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Title level={2} style={{ marginBottom: 8 }}>JSON to Code</Title>
-            <Text type="secondary">
-              Convert your JSON to C# or Java classes
-            </Text>
+    <>
+      <Helmet>
+        <title>JSON to Code Converter - Generate C# & Java Classes | FEKA Tools</title>
+        <meta name="description" content="Convert JSON to C# or Java classes instantly. Automatic type detection, proper naming conventions, and nested class generation for your development needs." />
+        <meta name="keywords" content="json to c#, json to java, json to class converter, json to code generator, convert json to class, json to c# class, json to java class, json2code" />
+      </Helmet>
+      <Layout>
+        <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <Title level={2} style={{ marginBottom: 8 }}>JSON to Code</Title>
+              <Text type="secondary">
+                Convert your JSON to C# or Java classes
+              </Text>
+            </div>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Card
+                  title="Input JSON"
+                  style={{ marginBottom: 16 }}
+                  bodyStyle={{ padding: '12px' }}
+                >
+                  <TextArea
+                    value={inputJson}
+                    onChange={(e) => setInputJson(e.target.value)}
+                    placeholder="Paste your JSON here..."
+                    style={textAreaStyle}
+                  />
+                  {error && (
+                    <div style={{ marginTop: 8 }}>
+                      <Text type="danger">{error}</Text>
+                    </div>
+                  )}
+                </Card>
+              </Col>
+
+              <Col span={12}>
+                <Card
+                  title="Generated Code"
+                  extra={
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <Select
+                        value={selectedLanguage}
+                        onChange={setSelectedLanguage}
+                        style={{ width: 120 }}
+                      >
+                        <Option value="csharp">C#</Option>
+                        <Option value="java">Java</Option>
+                      </Select>
+                      <Button
+                        type="text"
+                        icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                        onClick={handleCopy}
+                        disabled={!outputCode}
+                      >
+                        {copied ? 'Copied!' : 'Copy'}
+                      </Button>
+                    </div>
+                  }
+                  style={{ marginBottom: 16 }}
+                  bodyStyle={{ padding: '12px' }}
+                >
+                  <pre style={preStyle}>
+                    {outputCode || 'Generated code will appear here'}
+                  </pre>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Features Section */}
+            <Row gutter={16} style={{ marginTop: 24 }}>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Multiple Languages</Title>
+                  <Text type="secondary">
+                    Support for C# and Java class generation
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Proper Formatting</Title>
+                  <Text type="secondary">
+                    Generated code follows language conventions
+                  </Text>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Title level={5}>Type Detection</Title>
+                  <Text type="secondary">
+                    Automatically detects and assigns proper data types
+                  </Text>
+                </Card>
+              </Col>
+            </Row>
           </div>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Card
-                title="Input JSON"
-                style={{ marginBottom: 16 }}
-                bodyStyle={{ padding: '12px' }}
-              >
-                <TextArea
-                  value={inputJson}
-                  onChange={(e) => setInputJson(e.target.value)}
-                  placeholder="Paste your JSON here..."
-                  style={textAreaStyle}
-                />
-                {error && (
-                  <div style={{ marginTop: 8 }}>
-                    <Text type="danger">{error}</Text>
-                  </div>
-                )}
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card
-                title="Generated Code"
-                extra={
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <Select
-                      value={selectedLanguage}
-                      onChange={setSelectedLanguage}
-                      style={{ width: 120 }}
-                    >
-                      <Option value="csharp">C#</Option>
-                      <Option value="java">Java</Option>
-                    </Select>
-                    <Button
-                      type="text"
-                      icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                      onClick={handleCopy}
-                      disabled={!outputCode}
-                    >
-                      {copied ? 'Copied!' : 'Copy'}
-                    </Button>
-                  </div>
-                }
-                style={{ marginBottom: 16 }}
-                bodyStyle={{ padding: '12px' }}
-              >
-                <pre style={preStyle}>
-                  {outputCode || 'Generated code will appear here'}
-                </pre>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Features Section */}
-          <Row gutter={16} style={{ marginTop: 24 }}>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Multiple Languages</Title>
-                <Text type="secondary">
-                  Support for C# and Java class generation
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Proper Formatting</Title>
-                <Text type="secondary">
-                  Generated code follows language conventions
-                </Text>
-              </Card>
-            </Col>
-            <Col span={8}>
-              <Card size="small">
-                <Title level={5}>Type Detection</Title>
-                <Text type="secondary">
-                  Automatically detects and assigns proper data types
-                </Text>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </Content>
-    </Layout>
+        </Content>
+      </Layout>
+    </>
   );
 };
 
