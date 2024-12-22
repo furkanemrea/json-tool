@@ -1,15 +1,15 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import Navbar from './components/Navbar.tsx';
-import About from './components/About.tsx';
-import JsonMap from './components/JsonMap.tsx';
-import JsonBeautifier from './components/JsonBeautifier.tsx';
+import Navbar from './components/Navbar';
+import About from './components/About';
+import JsonMap from './components/JsonMap';
+import JsonBeautifier from './components/JsonBeautifier';
 import 'antd/dist/reset.css';
-import JsonToCode from './components/JsonToCode.tsx';
-import TextComparer from './components/TextComparer.tsx';
-import JsonToExcel from './components/JsonToExcel.tsx';
-import JsonToXml from './components/JsonToXml.tsx';
+import JsonToCode from './components/JsonToCode';
+import TextComparer from './components/TextComparer';
+import JsonToExcel from './components/JsonToExcel';
+import JsonToXml from './components/JsonToXml';
 import { HelmetProvider } from 'react-helmet-async';
 
 const AppContainer = styled.div`

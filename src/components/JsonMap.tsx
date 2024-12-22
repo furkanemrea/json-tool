@@ -1,15 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import Editor from "@monaco-editor/react";
 import ReactFlow, {
   Node,
   Edge,
-  Controls,
   Background,
-  Position,
   useNodesState,
   useEdgesState,
   ReactFlowInstance,
-  MiniMap,
   ReactFlowProvider,
 } from "reactflow";
 import { toPng } from "html-to-image";
@@ -18,10 +14,7 @@ import "./JsonMap.css";
 import {
   Layout,
   Typography,
-  Row,
-  Col,
   Input,
-  Card,
   Button,
   Space,
   Tooltip,
@@ -33,8 +26,6 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
   UndoOutlined,
-  RedoOutlined,
-  SaveOutlined,
   PictureOutlined,
   DownloadOutlined,
   MenuFoldOutlined,
@@ -90,9 +81,9 @@ const JsonMap = () => {
       setError(null);
     } catch (err) {
       console.error("JSON Parse Error:", err);
-      setError(`Invalid JSON format: ${err.message}`);
-      setNodes([]);
-      setEdges([]);
+        setError(`Invalid JSON format`);
+        setNodes([]);
+        setEdges([]);
     }
   }, [inputJson, setNodes, setEdges]);
 

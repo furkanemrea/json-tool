@@ -190,7 +190,6 @@ const JsonBeautifier = () => {
                           data={parsedJson}
                           theme={jsonTreeTheme}
                           invertTheme={false}
-                          shouldExpandNode={() => true}
                         />
                       </div>
                     ) : (

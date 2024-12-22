@@ -223,10 +223,6 @@ const About = () => {
                     background: feature.icon.props.style.color,
                     transition: 'all 0.3s ease'
                   }}
-                  hover={{
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                  }}
                 >
                   Try it now
                   <ArrowRightOutlined />
