@@ -1,21 +1,32 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Editor from '@monaco-editor/react';
-import ReactFlow, { 
-  Node, 
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import Editor from "@monaco-editor/react";
+import ReactFlow, {
+  Node,
   Edge,
-  Controls, 
+  Controls,
   Background,
   Position,
   useNodesState,
   useEdgesState,
   ReactFlowInstance,
   MiniMap,
-  ReactFlowProvider
-} from 'reactflow';
-import { toPng } from 'html-to-image';
-import 'reactflow/dist/style.css';
-import './JsonMap.css';
-import { Layout, Typography, Row, Col, Input, Card, Button, Space, Tooltip, Alert } from 'antd';
+  ReactFlowProvider,
+} from "reactflow";
+import { toPng } from "html-to-image";
+import "reactflow/dist/style.css";
+import "./JsonMap.css";
+import {
+  Layout,
+  Typography,
+  Row,
+  Col,
+  Input,
+  Card,
+  Button,
+  Space,
+  Tooltip,
+  Alert,
+} from "antd";
 import {
   FullscreenOutlined,
   FullscreenExitOutlined,
@@ -25,21 +36,24 @@ import {
   RedoOutlined,
   SaveOutlined,
   PictureOutlined,
-  DownloadOutlined
-} from '@ant-design/icons';
+  DownloadOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const JsonMap = () => {
-  const [inputJson, setInputJson] = useState('');
+  const [inputJson, setInputJson] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
   const flowRef = useRef<HTMLDivElement>(null);
+  const [isJsonPanelOpen, setIsJsonPanelOpen] = useState(true);
 
   useEffect(() => {
     if (!inputJson) {
@@ -55,15 +69,15 @@ const JsonMap = () => {
         parsed = JSON.parse(inputJson);
       } catch (parseError) {
         const cleanedInput = inputJson
-          .replace(/^\uFEFF/, '')
+          .replace(/^\uFEFF/, "")
           .replace(/[\u201C\u201D]/g, '"')
           .replace(/[\u2018\u2019]/g, "'");
-        
+
         parsed = JSON.parse(cleanedInput);
       }
 
-      if (!parsed || typeof parsed !== 'object') {
-        setError('Invalid JSON structure');
+      if (!parsed || typeof parsed !== "object") {
+        setError("Invalid JSON structure");
         setNodes([]);
         setEdges([]);
         return;
@@ -73,9 +87,8 @@ const JsonMap = () => {
       setNodes(newNodes);
       setEdges(newEdges);
       setError(null);
-
     } catch (err) {
-      console.error('JSON Parse Error:', err);
+      console.error("JSON Parse Error:", err);
       setError(`Invalid JSON format: ${err.message}`);
       setNodes([]);
       setEdges([]);
@@ -92,47 +105,53 @@ const JsonMap = () => {
     const SIBLING_SPACING = 100;
     const SAFETY_MARGIN = 50;
     const levelHeights: { [key: number]: { [key: string]: number } } = {};
-    
+
     const getSingularName = (pluralName: string): string => {
-      if (pluralName.endsWith('ies')) return pluralName.slice(0, -3) + 'y';
-      if (pluralName.endsWith('s')) return pluralName.slice(0, -1);
+      if (pluralName.endsWith("ies")) return pluralName.slice(0, -3) + "y";
+      if (pluralName.endsWith("s")) return pluralName.slice(0, -1);
       return pluralName;
     };
 
-    const getYPosition = (level: number, parentId: string | null, index: number, isSameArray: boolean): number => {
+    const getYPosition = (
+      level: number,
+      parentId: string | null,
+      index: number,
+      isSameArray: boolean
+    ): number => {
       if (!levelHeights[level]) {
         levelHeights[level] = {};
       }
-      
+
       if (!parentId) {
         return index * (GROUP_SPACING + SAFETY_MARGIN);
       }
 
       if (!levelHeights[level][parentId]) {
-        const parentNode = nodes.find(n => n.id === parentId);
+        const parentNode = nodes.find((n) => n.id === parentId);
         levelHeights[level][parentId] = parentNode ? parentNode.position.y : 0;
       }
 
       const currentY = levelHeights[level][parentId];
-      levelHeights[level][parentId] += (isSameArray ? SIBLING_SPACING : GROUP_SPACING) + SAFETY_MARGIN;
+      levelHeights[level][parentId] +=
+        (isSameArray ? SIBLING_SPACING : GROUP_SPACING) + SAFETY_MARGIN;
       return currentY;
     };
 
     const processObject = (
-      obj: any, 
-      parentId: string | null = null, 
-      label: string = '', 
+      obj: any,
+      parentId: string | null = null,
+      label: string = "",
       level = 0,
       verticalIndex = 0,
       isNewGroup = false,
-      arrayGroupName: string = ''
+      arrayGroupName: string = ""
     ) => {
       const currentId = `node-${nodeId++}`;
       const primitiveEntries: string[] = [];
       const objectEntries: [string, any][] = [];
 
       Object.entries(obj).forEach(([key, value]) => {
-        if (value !== null && typeof value === 'object') {
+        if (value !== null && typeof value === "object") {
           objectEntries.push([key, value]);
         } else {
           primitiveEntries.push(`${key}: ${formatValue(value)}`);
@@ -144,24 +163,31 @@ const JsonMap = () => {
 
       nodes.push({
         id: currentId,
-        data: { 
+        data: {
           label: (
             <div className={`node-content level-${level}`}>
-              <div className="node-title" style={{ 
-                color: getColorForLevel(level),
-                fontWeight: 600,
-                marginBottom: '8px',
-                borderBottom: `1px solid ${getColorForLevel(level)}`,
-                paddingBottom: '4px'
-              }}>
+              <div
+                className="node-title"
+                style={{
+                  color: getColorForLevel(level),
+                  fontWeight: 600,
+                  marginBottom: "8px",
+                  borderBottom: `1px solid ${getColorForLevel(level)}`,
+                  paddingBottom: "4px",
+                }}
+              >
                 {label}
               </div>
               <div className="node-properties">
                 {primitiveEntries.map((entry, i) => (
-                  <div key={i} className="node-property" style={{
-                    padding: '4px 0',
-                    fontSize: '12px'
-                  }}>
+                  <div
+                    key={i}
+                    className="node-property"
+                    style={{
+                      padding: "4px 0",
+                      fontSize: "12px",
+                    }}
+                  >
                     {entry}
                   </div>
                 ))}
@@ -170,7 +196,7 @@ const JsonMap = () => {
           ),
         },
         position: { x: xPos, y: yPos },
-        style: getNodeStyle(level)
+        style: getNodeStyle(level),
       });
 
       if (parentId) {
@@ -178,9 +204,9 @@ const JsonMap = () => {
           id: `edge-${parentId}-${currentId}`,
           source: parentId,
           target: currentId,
-          type: 'smoothstep',
+          type: "smoothstep",
           animated: true,
-          style: getEdgeStyle(level)
+          style: getEdgeStyle(level),
         });
       }
 
@@ -188,14 +214,7 @@ const JsonMap = () => {
         if (Array.isArray(value)) {
           processArray(value, currentId, key, level + 1, index);
         } else {
-          processObject(
-            value,
-            currentId,
-            key,
-            level + 1,
-            index,
-            index > 0
-          );
+          processObject(value, currentId, key, level + 1, index, index > 0);
         }
       });
     };
@@ -209,42 +228,45 @@ const JsonMap = () => {
     ) => {
       const arrayId = `array-${nodeId++}`;
       const singularName = getSingularName(arrayName);
-      
+
       nodes.push({
         id: arrayId,
         data: {
           label: (
             <div className={`node-content level-${level}`}>
-              <div className="node-title" style={{ 
-                color: getColorForLevel(level),
-                fontWeight: 600,
-                marginBottom: '8px',
-                borderBottom: `1px solid ${getColorForLevel(level)}`,
-                paddingBottom: '4px'
-              }}>
+              <div
+                className="node-title"
+                style={{
+                  color: getColorForLevel(level),
+                  fontWeight: 600,
+                  marginBottom: "8px",
+                  borderBottom: `1px solid ${getColorForLevel(level)}`,
+                  paddingBottom: "4px",
+                }}
+              >
                 {arrayName}
               </div>
             </div>
           ),
         },
-        position: { 
+        position: {
           x: level * (HORIZONTAL_SPACING + SAFETY_MARGIN),
-          y: getYPosition(level, parentId, verticalIndex, false)
+          y: getYPosition(level, parentId, verticalIndex, false),
         },
-        style: getNodeStyle(level, true)
+        style: getNodeStyle(level, true),
       });
 
       edges.push({
         id: `edge-${parentId}-${arrayId}`,
         source: parentId,
         target: arrayId,
-        type: 'smoothstep',
+        type: "smoothstep",
         animated: true,
-        style: getEdgeStyle(level)
+        style: getEdgeStyle(level),
       });
 
       arr.forEach((item, index) => {
-        if (typeof item === 'object' && item !== null) {
+        if (typeof item === "object" && item !== null) {
           processObject(
             item,
             arrayId,
@@ -261,19 +283,25 @@ const JsonMap = () => {
             data: {
               label: (
                 <div className={`node-content level-${level + 1}`}>
-                  <div className="node-title" style={{ 
-                    color: getColorForLevel(level + 1),
-                    fontWeight: 600,
-                    marginBottom: '8px',
-                    borderBottom: `1px solid ${getColorForLevel(level + 1)}`,
-                    paddingBottom: '4px'
-                  }}>
+                  <div
+                    className="node-title"
+                    style={{
+                      color: getColorForLevel(level + 1),
+                      fontWeight: 600,
+                      marginBottom: "8px",
+                      borderBottom: `1px solid ${getColorForLevel(level + 1)}`,
+                      paddingBottom: "4px",
+                    }}
+                  >
                     {`${singularName} ${index + 1}`}
                   </div>
-                  <div className="node-property" style={{
-                    padding: '4px 0',
-                    fontSize: '12px'
-                  }}>
+                  <div
+                    className="node-property"
+                    style={{
+                      padding: "4px 0",
+                      fontSize: "12px",
+                    }}
+                  >
                     {formatValue(item)}
                   </div>
                 </div>
@@ -281,18 +309,18 @@ const JsonMap = () => {
             },
             position: {
               x: (level + 1) * (HORIZONTAL_SPACING + SAFETY_MARGIN),
-              y: getYPosition(level + 1, arrayId, index, true)
+              y: getYPosition(level + 1, arrayId, index, true),
             },
-            style: getNodeStyle(level + 1)
+            style: getNodeStyle(level + 1),
           });
 
           edges.push({
             id: `edge-${arrayId}-${itemId}`,
             source: arrayId,
             target: itemId,
-            type: 'smoothstep',
+            type: "smoothstep",
             animated: true,
-            style: getEdgeStyle(level + 1)
+            style: getEdgeStyle(level + 1),
           });
         }
       });
@@ -310,24 +338,24 @@ const JsonMap = () => {
   };
 
   const getNodeStyle = (level: number, isArrayParent: boolean = false) => ({
-    background: isArrayParent ? '#f0f9ff' : '#ffffff',
+    background: isArrayParent ? "#f0f9ff" : "#ffffff",
     border: `2px solid ${getColorForLevel(level)}`,
-    borderRadius: '8px',
-    padding: '16px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    fontSize: '13px',
-    width: 'auto',
-    minWidth: '200px',
-    maxWidth: '300px'
+    borderRadius: "8px",
+    padding: "16px",
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+    fontSize: "13px",
+    width: "auto",
+    minWidth: "200px",
+    maxWidth: "300px",
   });
 
   const getColorForLevel = (level: number) => {
     const colors = [
-      '#2563eb', // blue
-      '#7c3aed', // purple
-      '#059669', // green
-      '#b45309', // amber
-      '#dc2626', // red
+      "#2563eb", // blue
+      "#7c3aed", // purple
+      "#059669", // green
+      "#b45309", // amber
+      "#dc2626", // red
     ];
     return colors[level % colors.length];
   };
@@ -339,10 +367,12 @@ const JsonMap = () => {
 
   const formatValue = (value: any): string => {
     if (Array.isArray(value)) {
-      return `[${value.map(item => typeof item === 'string' ? `"${item}"` : item).join(', ')}]`;
+      return `[${value
+        .map((item) => (typeof item === "string" ? `"${item}"` : item))
+        .join(", ")}]`;
     }
-    if (typeof value === 'string') return `"${value}"`;
-    if (value === null) return 'null';
+    if (typeof value === "string") return `"${value}"`;
+    if (value === null) return "null";
     return String(value);
   };
 
@@ -361,14 +391,17 @@ const JsonMap = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, []);
 
   const onNodeDoubleClick = (event: React.MouseEvent, node: Node) => {
-    const newLabel = prompt('Edit node label:', node.data.label.props.children[0].props.children);
+    const newLabel = prompt(
+      "Edit node label:",
+      node.data.label.props.children[0].props.children
+    );
     if (newLabel) {
       setNodes((nds) =>
         nds.map((n) => {
@@ -378,8 +411,17 @@ const JsonMap = () => {
               data: {
                 ...n.data,
                 label: (
-                  <div className={`node-content level-${n.data.label.props.className.split('-')[1]}`}>
-                    <div className="node-title" style={{ color: n.data.label.props.children[0].props.style.color }}>
+                  <div
+                    className={`node-content level-${
+                      n.data.label.props.className.split("-")[1]
+                    }`}
+                  >
+                    <div
+                      className="node-title"
+                      style={{
+                        color: n.data.label.props.children[0].props.style.color,
+                      }}
+                    >
                       {newLabel}
                     </div>
                     {n.data.label.props.children[1]}
@@ -394,33 +436,39 @@ const JsonMap = () => {
     }
   };
 
-  const onConnect = useCallback((params: any) => {
-    setEdges((eds) => [...eds, { ...params, type: 'smoothstep', animated: true }]);
-  }, [setEdges]);
+  const onConnect = useCallback(
+    (params: any) => {
+      setEdges((eds) => [
+        ...eds,
+        { ...params, type: "smoothstep", animated: true },
+      ]);
+    },
+    [setEdges]
+  );
 
   const downloadImage = useCallback(() => {
     if (flowRef.current === null) {
       return;
     }
 
-    const downloadButton = document.createElement('a');
-    
+    const downloadButton = document.createElement("a");
+
     toPng(flowRef.current, {
-      backgroundColor: '#fff',
+      backgroundColor: "#fff",
       width: flowRef.current.offsetWidth * 2,
       height: flowRef.current.offsetHeight * 2,
       style: {
-        transform: 'scale(2)',
-        transformOrigin: 'top left'
-      }
+        transform: "scale(2)",
+        transformOrigin: "top left",
+      },
     })
       .then((dataUrl) => {
-        downloadButton.download = 'json-diagram.png';
+        downloadButton.download = "json-diagram.png";
         downloadButton.href = dataUrl;
         downloadButton.click();
       })
       .catch((error) => {
-        console.error('Error downloading image:', error);
+        console.error("Error downloading image:", error);
       });
   }, []);
 
@@ -429,11 +477,12 @@ const JsonMap = () => {
 
     const flow = rfInstance.toObject();
     const dataStr = JSON.stringify(flow, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataUri);
-    downloadAnchor.setAttribute('download', 'flow.json');
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataUri);
+    downloadAnchor.setAttribute("download", "flow.json");
     downloadAnchor.click();
   }, [rfInstance]);
 
@@ -454,16 +503,18 @@ const JsonMap = () => {
   };
 
   const controlButtons = (
-    <div style={{ 
-      position: 'absolute', 
-      top: 20, 
-      right: 20, 
-      zIndex: 4,
-      background: 'white',
-      padding: '8px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
-    }}>
+    <div
+      style={{
+        position: "absolute",
+        top: 20,
+        right: 20,
+        zIndex: 4,
+        background: "white",
+        padding: "8px",
+        borderRadius: "8px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+      }}
+    >
       <Space>
         <Tooltip title="Zoom In">
           <Button
@@ -486,15 +537,17 @@ const JsonMap = () => {
             onClick={handleResetView}
           />
         </Tooltip>
-        <div style={{ width: '1px', background: '#f0f0f0', height: '24px' }} />
+        <div style={{ width: "1px", background: "#f0f0f0", height: "24px" }} />
         <Tooltip title="Toggle Fullscreen">
           <Button
             type="text"
-            icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+            icon={
+              isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
+            }
             onClick={toggleFullscreen}
           />
         </Tooltip>
-        <div style={{ width: '1px', background: '#f0f0f0', height: '24px' }} />
+        <div style={{ width: "1px", background: "#f0f0f0", height: "24px" }} />
         <Tooltip title="Save as Image">
           <Button
             type="text"
@@ -514,38 +567,54 @@ const JsonMap = () => {
   );
 
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Content style={{ height: '100%', display: 'flex' }}>
+    <Layout style={{ height: "100vh" }}>
+      <Content style={{ height: "100%", display: "flex" }}>
         {/* JSON Input Panel */}
-        <div style={{ 
-          width: '350px', 
-          height: '100%', 
-          borderRight: '1px solid #f0f0f0',
-          backgroundColor: '#fff',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <div style={{ padding: '16px', borderBottom: '1px solid #f0f0f0' }}>
-            <Title level={4} style={{ margin: 0 }}>JSON Input</Title>
+        <div
+          style={{
+            width: isJsonPanelOpen ? "350px" : "0px",
+            height: "100%",
+            borderRight: "1px solid #f0f0f0",
+            backgroundColor: "#fff",
+            display: "flex",
+            flexDirection: "column",
+            transition: "width 0.2s ease",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              padding: "16px",
+              borderBottom: "1px solid #f0f0f0",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Title level={4} style={{ margin: 0 }}>
+              JSON Input
+            </Title>
           </div>
-          <div style={{ 
-            flex: 1, 
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+          <div
+            style={{
+              flex: 1,
+              padding: "16px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <TextArea
               value={inputJson}
               onChange={(e) => setInputJson(e.target.value)}
               placeholder="Paste your JSON here..."
-              style={{ 
+              style={{
                 flex: 1,
-                resize: 'none',
-                fontFamily: 'monospace',
-                fontSize: '13px',
-                border: '1px solid #d9d9d9',
-                borderRadius: '4px',
-                padding: '8px'
+                resize: "none",
+                fontFamily: "monospace",
+                fontSize: "13px",
+                border: "1px solid #d9d9d9",
+                borderRadius: "4px",
+                padding: "8px",
               }}
             />
             {error && (
@@ -553,22 +622,48 @@ const JsonMap = () => {
                 message="Error"
                 description={error}
                 type="error"
-                style={{ marginTop: '16px' }}
+                style={{ marginTop: "16px" }}
                 showIcon
               />
             )}
           </div>
         </div>
 
+        {/* Toggle Button */}
+        <Button
+          type="text"
+          icon={isJsonPanelOpen ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+          onClick={() => setIsJsonPanelOpen(!isJsonPanelOpen)}
+          style={{
+            position: "absolute",
+            left: isJsonPanelOpen ? "350px" : "0",
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 100,
+            transition: "left 0.2s ease",
+            borderRadius: "0 4px 4px 0",
+            height: "50px",
+            width: "20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#fff",
+            borderLeft: "none",
+            boxShadow: "2px 0 8px rgba(0,0,0,0.15)",
+          }}
+        />
+
         {/* Diagram Panel */}
-        <div style={{ 
-          flex: 1, 
-          height: '100%',
-          position: 'relative',
-          backgroundColor: '#fafafa'
-        }}>
+        <div
+          style={{
+            flex: 1,
+            height: "100%",
+            position: "relative",
+            backgroundColor: "#fafafa",
+          }}
+        >
           <ReactFlowProvider>
-            <div ref={flowRef} style={{ height: '100%' }}>
+            <div ref={flowRef} style={{ height: "100%" }}>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -594,4 +689,4 @@ const JsonMap = () => {
   );
 };
 
-export default JsonMap; 
+export default JsonMap;

@@ -9,10 +9,11 @@ import 'antd/dist/reset.css';
 import JsonToCode from './components/JsonToCode.tsx';
 import TextComparer from './components/TextComparer.tsx';
 import JsonToExcel from './components/JsonToExcel.tsx';
+import JsonToXml from './components/JsonToXml.tsx';
 
 const AppContainer = styled.div`
   min-height: 100vh;
-  background-color: #1e1e1e;
+  background: rgb(248, 250, 252);
   color: #ffffff;
 `;
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/json-map" element={<JsonMap />} />
           <Route path="/about" element={<About />} />
           <Route path="/json-to-code" element={<JsonToCode />} />
+          <Route path="/json-to-xml" element={<JsonToXml />} />
           <Route path="/text-comparer" element={<TextComparer />} />
           <Route path="/json-converter" element={<JsonToExcel />} />
         </Routes>

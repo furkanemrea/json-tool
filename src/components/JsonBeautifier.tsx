@@ -1,35 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, Typography, Row, Col, Input, Card, Button, message } from 'antd';
+import { Layout, Typography, Row, Col, Input, Card, Button, message, Checkbox } from 'antd';
 import { CopyOutlined, CheckOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { JSONTree } from 'react-json-tree';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
+
+// Add an error boundary component
+class JsonViewerErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('JsonViewer Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <Text type="danger">Something went wrong with the JSON viewer.</Text>;
+    }
+    return this.props.children;
+  }
+}
 
 const JsonBeautifier = () => {
   const [inputJson, setInputJson] = useState('');
   const [formattedJson, setFormattedJson] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [useTreeView, setUseTreeView] = useState(false);
+  const [parsedJson, setParsedJson] = useState<any>(null);
 
-  useEffect(() => {
-    if (!inputJson) {
+  // Memoize the JSON parsing function
+  const parseJson = useCallback((input: string) => {
+    if (!input) {
       setFormattedJson('');
       setError(null);
+      setParsedJson(null);
       return;
     }
 
     try {
-      const parsedJson = JSON.parse(inputJson);
-      const beautified = JSON.stringify(parsedJson, null, 2);
+      const parsed = JSON.parse(input);
+      const beautified = JSON.stringify(parsed, null, 2);
       setFormattedJson(beautified);
+      setParsedJson(parsed);
       setError(null);
     } catch (err) {
       setError('Invalid JSON format');
       setFormattedJson('');
+      setParsedJson(null);
     }
-  }, [inputJson]);
+  }, []);
+
+  useEffect(() => {
+    parseJson(inputJson);
+    return () => {
+      // Cleanup function
+      setFormattedJson('');
+      setParsedJson(null);
+      setError(null);
+    };
+  }, [inputJson, parseJson]);
 
   const handleCopy = async () => {
     if (formattedJson) {
@@ -56,6 +99,16 @@ const JsonBeautifier = () => {
     overflow: 'auto',
     fontFamily: 'monospace',
     fontSize: '13px',
+  };
+
+  const jsonTreeTheme = {
+    scheme: 'default',
+    base00: '#fff',
+    base0B: '#064',  // strings & date values
+    base0D: '#06f',  // boolean, number, null
+    base08: '#c22',  // null, undefined
+    base0A: '#999',  // float
+    base0E: '#708'   // keys
   };
 
   return (
@@ -103,21 +156,42 @@ const JsonBeautifier = () => {
               <Card
                 title="Formatted JSON"
                 extra={
-                  <Button
-                    type="link"
-                    icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                    onClick={handleCopy}
-                    disabled={!formattedJson}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </Button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Checkbox
+                      checked={useTreeView}
+                      onChange={(e) => setUseTreeView(e.target.checked)}
+                    >
+                      Tree View
+                    </Checkbox>
+                    <Button
+                      type="link"
+                      icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                      onClick={handleCopy}
+                      disabled={!formattedJson}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </Button>
+                  </div>
                 }
                 style={{ marginBottom: 16 }}
                 bodyStyle={{ padding: '12px' }}
               >
-                <pre style={preStyle}>
-                  {formattedJson || 'Formatted JSON will appear here'}
-                </pre>
+                <JsonViewerErrorBoundary>
+                  {useTreeView && parsedJson ? (
+                    <div style={{ ...preStyle, backgroundColor: 'white' }}>
+                      <JSONTree 
+                        data={parsedJson}
+                        theme={jsonTreeTheme}
+                        invertTheme={false}
+                        shouldExpandNode={() => true}
+                      />
+                    </div>
+                  ) : (
+                    <pre style={preStyle}>
+                      {formattedJson || 'Formatted JSON will appear here'}
+                    </pre>
+                  )}
+                </JsonViewerErrorBoundary>
               </Card>
             </Col>
           </Row>

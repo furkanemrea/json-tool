@@ -217,58 +217,50 @@ const JsonToCode = () => {
     }
   };
 
+  const textAreaStyle = {
+    height: '500px',
+    fontFamily: 'monospace',
+    fontSize: '13px',
+  };
+
+  const preStyle = {
+    height: '500px',
+    margin: 0,
+    padding: '8px',
+    backgroundColor: '#fafafa',
+    border: '1px solid #d9d9d9',
+    borderRadius: '4px',
+    overflow: 'auto',
+    fontFamily: 'monospace',
+    fontSize: '13px',
+  };
+
   return (
     <Layout>
       <Content style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <Title level={2} style={{ marginBottom: 8 }}>JSON to Code</Title>
             <Text type="secondary">
-              Convert JSON to various programming language classes
+              Convert your JSON to C# or Java classes
             </Text>
           </div>
 
-          {/* Language Selector */}
-          <Row justify="center" style={{ marginBottom: 24 }}>
-            <Col>
-              <Select
-                value={selectedLanguage}
-                onChange={setSelectedLanguage}
-                style={{ width: 200 }}
-              >
-                <Option value="csharp">C#</Option>
-                <Option value="java">Java</Option>
-              </Select>
-            </Col>
-          </Row>
-
-          {/* Main Content */}
           <Row gutter={16}>
             <Col span={12}>
               <Card
                 title="Input JSON"
-                extra={
-                  <Link to="/json-map">
-                    <Button type="link" icon={<ArrowRightOutlined />}>
-                      View as Map
-                    </Button>
-                  </Link>
-                }
                 style={{ marginBottom: 16 }}
+                bodyStyle={{ padding: '12px' }}
               >
                 <TextArea
                   value={inputJson}
                   onChange={(e) => setInputJson(e.target.value)}
                   placeholder="Paste your JSON here..."
-                  autoSize={{ minRows: 20, maxRows: 20 }}
-                  style={{ 
-                    fontFamily: 'monospace',
-                    fontSize: '13px'
-                  }}
+                  style={textAreaStyle}
                 />
                 {error && (
-                  <div style={{ marginTop: 16 }}>
+                  <div style={{ marginTop: 8 }}>
                     <Text type="danger">{error}</Text>
                   </div>
                 )}
@@ -277,34 +269,33 @@ const JsonToCode = () => {
 
             <Col span={12}>
               <Card
-                title={`${selectedLanguage.toUpperCase()} Classes`}
+                title="Generated Code"
                 extra={
-                  <Button
-                    type="link"
-                    icon={copied ? <CheckOutlined /> : <CopyOutlined />}
-                    onClick={handleCopy}
-                    disabled={!outputCode}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </Button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Select
+                      value={selectedLanguage}
+                      onChange={setSelectedLanguage}
+                      style={{ width: 120 }}
+                    >
+                      <Option value="csharp">C#</Option>
+                      <Option value="java">Java</Option>
+                    </Select>
+                    <Button
+                      type="text"
+                      icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                      onClick={handleCopy}
+                      disabled={!outputCode}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </Button>
+                  </div>
                 }
                 style={{ marginBottom: 16 }}
+                bodyStyle={{ padding: '12px' }}
               >
-                <div
-                  style={{
-                    fontFamily: 'monospace',
-                    fontSize: '13px',
-                    backgroundColor: '#fafafa',
-                    padding: '12px',
-                    borderRadius: '4px',
-                    border: '1px solid #d9d9d9',
-                    height: '458px',
-                    overflowY: 'auto',
-                    whiteSpace: 'pre-wrap'
-                  }}
-                >
-                  {outputCode || `Generated ${selectedLanguage.toUpperCase()} classes will appear here`}
-                </div>
+                <pre style={preStyle}>
+                  {outputCode || 'Generated code will appear here'}
+                </pre>
               </Card>
             </Col>
           </Row>
@@ -315,23 +306,23 @@ const JsonToCode = () => {
               <Card size="small">
                 <Title level={5}>Multiple Languages</Title>
                 <Text type="secondary">
-                  Convert JSON to different programming languages
+                  Support for C# and Java class generation
                 </Text>
               </Card>
             </Col>
             <Col span={8}>
               <Card size="small">
-                <Title level={5}>Instant Conversion</Title>
+                <Title level={5}>Proper Formatting</Title>
                 <Text type="secondary">
-                  See the converted classes in real-time as you type
+                  Generated code follows language conventions
                 </Text>
               </Card>
             </Col>
             <Col span={8}>
               <Card size="small">
-                <Title level={5}>Smart Type Detection</Title>
+                <Title level={5}>Type Detection</Title>
                 <Text type="secondary">
-                  Automatically detects and assigns appropriate data types
+                  Automatically detects and assigns proper data types
                 </Text>
               </Card>
             </Col>

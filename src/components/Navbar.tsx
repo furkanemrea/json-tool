@@ -1,50 +1,98 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from '@emotion/styled';
+import { Layout, Menu } from 'antd';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  HomeOutlined,
+  FormatPainterOutlined,
+  NodeIndexOutlined,
+  CodeOutlined,
+  FileTextOutlined,
+  CompassOutlined,
+  FileExcelOutlined,
+} from '@ant-design/icons';
 
-const Nav = styled('nav')`
-  background-color: #282828;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const NavContainer = styled('div')`
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const NavLinks = styled('div')`
-  display: flex;
-  gap: 2rem;
-`;
-
-const StyledLink = styled(Link)`
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 500;
-  &:hover {
-    color: #61dafb;
-  }
-`;
+const { Header } = Layout;
 
 const Navbar = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    {
+      key: '/about',
+      icon: <HomeOutlined />,
+      label: 'FEKA',
+    },
+    {
+      key: '/json-beautifier',
+      icon: <FormatPainterOutlined />,
+      label: 'Beautifier',
+    },
+    {
+      key: '/json-map',
+      icon: <NodeIndexOutlined />,
+      label: 'JSON Map',
+    },
+    {
+      key: '/json-to-code',
+      icon: <CodeOutlined />,
+      label: 'JSON to Code',
+    },
+    {
+      key: '/text-comparer',
+      icon: <CompassOutlined />,
+      label: 'Text Comparer',
+    },
+    {
+      key: '/json-converter',
+      icon: <FileExcelOutlined />,
+      label: 'JSON to Excel',
+    },
+    {
+      key: '/json-to-xml',
+      icon: <FileTextOutlined />,
+      label: 'JSON to XML',
+    },
+  ];
+
   return (
-    <Nav>
-      <NavContainer>
-        <StyledLink to="/">JSON Tools</StyledLink>
-        <NavLinks>
-          <StyledLink to="/json-beautifier">Beautifier</StyledLink>
-          <StyledLink to="/json-map">JSON Map</StyledLink>
-          <StyledLink to="/json-to-code">JSON to Code</StyledLink>
-          <StyledLink to="/text-comparer">Text Comparer</StyledLink>
-          <StyledLink to="/json-converter">Json Converter</StyledLink>
-          <StyledLink to="/about">About</StyledLink>
-        </NavLinks>
-      </NavContainer>
-    </Nav>
+    <Header 
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+        width: '100%',
+        padding: 0,
+        background: '#fff',
+        borderBottom: '1px solid #f0f0f0',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+        height: '46px',
+        lineHeight: '46px'
+      }}
+    >
+      <Menu
+        mode="horizontal"
+        selectedKeys={[location.pathname]}
+        items={menuItems.map(item => ({
+          ...item,
+          key: item.key,
+          icon: React.cloneElement(item.icon, {
+            style: { fontSize: '18px' }
+          }),
+          label: (
+            <Link to={item.key}>
+              {item.label}
+            </Link>
+          )
+        }))}
+        style={{
+          justifyContent: 'center',
+          border: 'none',
+          height: '46px',
+          lineHeight: '46px'
+        }}
+        theme="light"
+      />
+    </Header>
   );
 };
 
