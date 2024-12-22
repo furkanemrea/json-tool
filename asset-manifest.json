@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/json-tools/static/css/main.8708d097.css",
-    "main.js": "/json-tools/static/js/main.e7526252.js",
-    "index.html": "/json-tools/index.html",
-    "main.8708d097.css.map": "/json-tools/static/css/main.8708d097.css.map",
-    "main.e7526252.js.map": "/json-tools/static/js/main.e7526252.js.map"
+    "main.css": "/json-tool/static/css/main.8708d097.css",
+    "main.js": "/json-tool/static/js/main.e7526252.js",
+    "index.html": "/json-tool/index.html",
+    "main.8708d097.css.map": "/json-tool/static/css/main.8708d097.css.map",
+    "main.e7526252.js.map": "/json-tool/static/js/main.e7526252.js.map"
   },
   "entrypoints": [
     "static/css/main.8708d097.css",
