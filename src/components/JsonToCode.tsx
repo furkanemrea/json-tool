@@ -202,6 +202,93 @@ const JsonToCode = () => {
     }
   };
 
+  const convertJsonToTypeScript = (json: string): string => {
+    try {
+      const processedInterfaces = new Set<string>();
+      let allInterfaces = '';
+
+      const generateInterface = (obj: any, interfaceName: string): string => {
+        if (processedInterfaces.has(interfaceName)) {
+          return '';
+        }
+        processedInterfaces.add(interfaceName);
+
+        let interfaceContent = `export interface ${interfaceName} {\n`;
+        
+        Object.entries(obj).forEach(([key, value]) => {
+          const propertyName = key;
+          const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+          
+          if (Array.isArray(value)) {
+            if (value.length > 0 && typeof value[0] === 'object' && value[0] !== null) {
+              const itemInterfaceName = `${capitalizedKey}Item`;
+              interfaceContent += `  ${propertyName}: ${itemInterfaceName}[];\n`;
+              const nestedInterface = generateInterface(value[0], itemInterfaceName);
+              if (nestedInterface) {
+                allInterfaces += nestedInterface;
+              }
+            } else {
+              const itemType = value.length > 0 ? getTypeScriptType(value[0]) : "any";
+              interfaceContent += `  ${propertyName}: ${itemType}[];\n`;
+            }
+          } else if (typeof value === 'object' && value !== null) {
+            const nestedInterfaceName = capitalizedKey;
+            interfaceContent += `  ${propertyName}: ${nestedInterfaceName};\n`;
+            const nestedInterface = generateInterface(value, nestedInterfaceName);
+            if (nestedInterface) {
+              allInterfaces += nestedInterface;
+            }
+          } else {
+            const type = getTypeScriptType(value);
+            interfaceContent += `  ${propertyName}: ${type};\n`;
+          }
+        });
+        
+        interfaceContent += `}\n\n`;
+        return interfaceContent;
+      };
+
+      let parsedJson = JSON.parse(json);
+      
+      // If the root is an array, wrap it in an object with 'items' property
+      if (Array.isArray(parsedJson)) {
+        parsedJson = {
+          items: parsedJson
+        };
+      }
+
+      const mainInterface = generateInterface(parsedJson, 'Root');
+      return `${mainInterface}${allInterfaces}`;
+    } catch (error) {
+      console.error('Error converting JSON to TypeScript:', error);
+      throw new Error('Failed to convert JSON to TypeScript interfaces');
+    }
+  };
+
+  const getTypeScriptType = (value: any): string => {
+    if (value === null || value === undefined) return "any";
+    
+    switch (typeof value) {
+      case 'string':
+        if (/^\d{4}-\d{2}-\d{2}T?\d{2}:\d{2}:\d{2}/.test(value)) {
+          return "Date";
+        }
+        return "string";
+      case 'number':
+        return Number.isInteger(value) ? "number" : "number";
+      case 'boolean':
+        return "boolean";
+      case 'object':
+        if (Array.isArray(value)) {
+          if (value.length === 0) return "any[]";
+          return `${getTypeScriptType(value[0])}[]`;
+        }
+        return "object";
+      default:
+        return "any";
+    }
+  };
+
   useEffect(() => {
     if (!inputJson) {
       setOutputCode('');
@@ -211,12 +298,16 @@ const JsonToCode = () => {
 
     try {
       const parsedJson = JSON.parse(inputJson);
-      if (selectedLanguage === 'csharp') {
-        const csharpCode = convertJsonToCSharp(inputJson);
-        setOutputCode(csharpCode);
-      } else if (selectedLanguage === 'java') {
-        const javaCode = convertJsonToJava(inputJson);
-        setOutputCode(javaCode);
+      switch (selectedLanguage) {
+        case 'csharp':
+          setOutputCode(convertJsonToCSharp(inputJson));
+          break;
+        case 'java':
+          setOutputCode(convertJsonToJava(inputJson));
+          break;
+        case 'typescript':
+          setOutputCode(convertJsonToTypeScript(inputJson));
+          break;
       }
       setError(null);
     } catch (err) {
@@ -302,6 +393,7 @@ const JsonToCode = () => {
                       >
                         <Option value="csharp">C#</Option>
                         <Option value="java">Java</Option>
+                        <Option value="typescript">TypeScript</Option>
                       </Select>
                       <Button
                         type="text"
