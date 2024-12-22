@@ -83,7 +83,7 @@ const About = () => {
     {
       title: 'JSON to Excel/CSV',
       icon: <FileExcelOutlined style={{ fontSize: '28px', color: '#047857' }} />,
-      path: '/json-to-excel',
+      path: '/json-to-converter',
       description: 'Convert JSON to Excel or CSV format.',
       features: [
         'Support for both Excel and CSV formats',
