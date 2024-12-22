@@ -2,7 +2,7 @@
   "name": "json-beautifier",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://furkanemrea.github.io/json-tool",
+  "homepage": "/about",
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
     "@emotion/react": "^11.14.0",
