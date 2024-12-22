@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   HomeOutlined,
   FormatPainterOutlined,
@@ -9,6 +9,7 @@ import {
   FileTextOutlined,
   CompassOutlined,
   FileExcelOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 
 const { Header } = Layout;
@@ -52,6 +53,11 @@ const Navbar = () => {
       key: '/json-to-xml',
       icon: <FileTextOutlined />,
       label: 'JSON to XML',
+    },
+    {
+      key: '/fake-data',
+      icon: <DatabaseOutlined />,
+      label: 'Fake Data',
     },
   ];
 

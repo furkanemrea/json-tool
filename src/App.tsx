@@ -11,6 +11,7 @@ import TextComparer from './components/TextComparer';
 import JsonToExcel from './components/JsonToExcel';
 import JsonToXml from './components/JsonToXml';
 import { HelmetProvider } from 'react-helmet-async';
+import FakeData from './components/FakeData';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -32,6 +33,7 @@ function App() {
           <Route path="/text-comparer" element={<TextComparer />} />
           <Route path="/json-converter" element={<JsonToExcel />} />
           <Route path="/json-to-xml" element={<JsonToXml />} />
+          <Route path="/fake-data" element={<FakeData />} />
         </Routes>
       </AppContainer>
     </HelmetProvider>

@@ -123,7 +123,15 @@ const JsonToCode = () => {
         return classContent;
       };
 
-      const parsedJson = JSON.parse(json);
+      let parsedJson = JSON.parse(json);
+      
+      // If the root is an array, wrap it in an object with 'items' property
+      if (Array.isArray(parsedJson)) {
+        parsedJson = {
+          items: parsedJson
+        };
+      }
+
       const mainClass = generateClass(parsedJson, 'Root');
       return `import java.time.LocalDateTime;\nimport java.util.List;\n\n${mainClass}${allClasses}`;
     } catch (error) {
@@ -177,7 +185,15 @@ const JsonToCode = () => {
         return classContent;
       };
 
-      const parsedJson = JSON.parse(json);
+      let parsedJson = JSON.parse(json);
+      
+      // If the root is an array, wrap it in an object with 'items' property
+      if (Array.isArray(parsedJson)) {
+        parsedJson = {
+          items: parsedJson
+        };
+      }
+
       const mainClass = generateClass(parsedJson, 'Root');
       return `using System;\nusing System.Collections.Generic;\n\nnamespace JsonGeneratedModels\n{\n${mainClass}${allClasses}}`;
     } catch (error) {
